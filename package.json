@@ -1,0 +1,20 @@
+{
+  "name": "beecrowd-companion",
+  "version": "1.0.0",
+  "description": "Extensão do Chrome para o Beecrowd com Monaco Editor, execução de código e testes automatizados",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "monaco-editor": "^0.52.2"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.308",
+    "@types/node": "^22.13.10",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.1"
+  }
+}

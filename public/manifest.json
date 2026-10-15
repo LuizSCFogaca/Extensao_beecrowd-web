@@ -1,0 +1,52 @@
+{
+  "manifest_version": 3,
+  "name": "Beecrowd Companion",
+  "version": "1.0.0",
+  "description": "Editor integrado estilo VS Code com execução de testes para o Beecrowd",
+  "permissions": [
+    "sidePanel",
+    "activeTab",
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*.beecrowd.com/*",
+    "*://*.beecrowd.com.br/*",
+    "*://*.urionlinejudge.com.br/*",
+    "https://wandbox.org/*",
+    "https://emkc.org/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "Abrir Beecrowd Companion"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.beecrowd.com/*",
+        "*://*.beecrowd.com.br/*",
+        "*://*.urionlinejudge.com.br/*"
+      ],
+      "js": ["content-loader.js"],
+      "all_frames": true,
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["content.js", "assets/*"],
+      "matches": [
+        "*://*.beecrowd.com/*",
+        "*://*.beecrowd.com.br/*",
+        "*://*.urionlinejudge.com.br/*"
+      ]
+    }
+  ]
+}

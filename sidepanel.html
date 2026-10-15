@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beecrowd Companion</title>
+  <link rel="stylesheet" href="./src/sidepanel/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Header com Informações da Questão e Ações Rápidas -->
+    <header class="header">
+      <div class="problem-meta">
+        <span class="badge" id="problem-id">Beecrowd</span>
+        <h2 id="problem-title" title="Nenhum problema detectado">Aguardando problema...</h2>
+      </div>
+      <div class="header-controls">
+        <select id="language-select" class="select-input">
+          <option value="python">Python 3</option>
+          <option value="cpp" selected>C++ 17</option>
+          <option value="c">C (gcc)</option>
+          <option value="java">Java 17</option>
+          <option value="csharp">C#</option>
+          <option value="javascript">JavaScript (Node.js)</option>
+        </select>
+        <button id="btn-sync" class="btn btn-secondary btn-icon-only" title="Sincronizar com a página ativa" aria-label="Sincronizar">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Área Principal: Editor Monaco -->
+    <main class="editor-section">
+      <div id="editor-container"></div>
+    </main>
+
+    <!-- Barra de Controle de Testes -->
+    <div class="runner-controls">
+      <div class="tabs-header" id="test-tabs">
+        <button class="tab-btn active" data-tab="tests">Exemplos do Beecrowd (<span id="test-count">0</span>)</button>
+        <button class="tab-btn" data-tab="custom">Entrada Manual</button>
+      </div>
+      <div class="action-buttons">
+        <button id="btn-submit-beecrowd" class="btn btn-secondary" title="Injeta o código diretamente no editor de submissão do Beecrowd">
+          Enviar ao Beecrowd
+        </button>
+        <button id="btn-run" class="btn btn-primary">
+          Rodar Testes
+        </button>
+      </div>
+    </div>
+
+    <!-- Área de Exibição dos Testes e Resultados -->
+    <section class="test-panel" id="test-panel">
+      <div id="tests-view" class="tab-content active">
+        <div id="test-cases-list" class="test-cases-container">
+          <p class="placeholder-text">Abra uma questão no Beecrowd para carregar os exemplos de entrada e saída automaticamente.</p>
+        </div>
+      </div>
+      <div id="custom-view" class="tab-content">
+        <div class="custom-io-container">
+          <div class="io-box">
+            <label>Entrada Personalizada (stdin):</label>
+            <textarea id="custom-stdin" placeholder="Digite aqui a entrada para teste manual..."></textarea>
+          </div>
+          <div class="io-box">
+            <label>Saída Gerada (stdout):</label>
+            <pre id="custom-stdout" class="output-box placeholder">A saída aparecerá aqui após rodar.</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Toast de Notificação -->
+    <div id="toast" class="toast hidden"></div>
+  </div>
+
+  <script type="module" src="./src/sidepanel/main.ts"></script>
+</body>
+</html>
