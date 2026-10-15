@@ -19,8 +19,10 @@ Uma extensão completa e moderna para resolver problemas no **Beecrowd** (antigo
    - Botão para adicionar casos de teste manuais personalizados.
    - Botão de cópia rápida (📋) para a entrada de cada teste.
 
-3. **Execução de Código e Validador Automático**:
-   - Compila e roda o código remotamente em tempo real via **Wandbox API** (sem necessidade de chaves de API).
+3. **Execução Local Nativa com Desempenho Idêntico ao VS Code (⚡ Instantâneo)**:
+   - Compila e roda os códigos **diretamente no seu processador** via **Chrome Native Messaging**.
+   - Zero dependência de APIs externas lentas (Wandbox/Piston removidos).
+   - Compilação inteligente única para C/C++: o binário é gerado 1x e reutilizado para rodar todos os casos de teste em milissegundos (~20ms a 60ms por teste).
    - Execução em lote com feedback visual em tempo real para cada caso de teste.
    - **Vereditos inteligentes**:
      - 🟩 **Passou (`AC`)**: saída bate perfeitamente com a esperada (com indicação do tempo de resposta em ms).
@@ -51,6 +53,7 @@ Uma extensão completa e moderna para resolver problemas no **Beecrowd** (antigo
    C:\Users\Home\Desktop\BeecrowdWeb\dist
    ```
 5. Fixe o ícone da extensão na barra de ferramentas do Chrome.
+6. Na pasta do projeto, dê dois cliques no arquivo **`registrar-host.bat`** (ou execute `npm run register-host`) para autorizar a extensão a executar seus compiladores locais. Pronto!
 
 ---
 

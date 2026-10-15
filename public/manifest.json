@@ -3,19 +3,19 @@
   "name": "Beecrowd Companion",
   "version": "1.0.0",
   "description": "Editor integrado estilo VS Code com execução de testes para o Beecrowd",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnOVWfhm9Hjwj5IHzDbj2/tX4PlQCJHfHvcWnV+p2/GD7/m9HjYQJWP4PkQGhCQv+KZElfo2yOPJNFPDm/DpkkTtebEr9y6i+D1Ojy1mNV8ZNmGm/+FXi6ra403YisBT6pD7R3O3GVdYCWThk5XohMBwmHDLvdMf1P/say7aV+Bx7Ue8pCrwSlfoqdE8xEtLq0nkIO6kmVje24kJhbrES7asff/OeFDQrdd9Ke7uYjAFL+zUMy21Mz+XYT7xiHh2O+JhecHfT+BG52eUpeAvFWFvFeFJh7aNyJNHxdXZjxyB1XpxJjTBgs3VQQdVWrwn5iCEuHIpnT7CbYj0T5IFu6QIDAQAB",
   "permissions": [
     "sidePanel",
     "activeTab",
     "storage",
     "tabs",
-    "scripting"
+    "scripting",
+    "nativeMessaging"
   ],
   "host_permissions": [
     "*://*.beecrowd.com/*",
     "*://*.beecrowd.com.br/*",
-    "*://*.urionlinejudge.com.br/*",
-    "https://wandbox.org/*",
-    "https://emkc.org/*"
+    "*://*.urionlinejudge.com.br/*"
   ],
   "background": {
     "service_worker": "background.js",

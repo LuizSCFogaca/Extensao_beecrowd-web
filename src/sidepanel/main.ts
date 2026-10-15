@@ -5,7 +5,7 @@ import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
 import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 import { ProblemInfo, TestCase } from '../types';
-import { executeCode, evaluateOutput } from './runner';
+import { executeCode, evaluateOutput, executeBatchTests, checkNativeHost } from './runner';
 import { injectCodeIntoBeecrowd } from './injector';
 
 // Configuração dos workers do Monaco Editor
@@ -428,21 +428,40 @@ function setupControls() {
     renderTestCases(currentProblem.testCases);
 
     try {
-      const promises = currentProblem.testCases.map(async (tc) => {
-        const res = await executeCode(language, code, tc.input);
-        const evaluation = evaluateOutput(res.stdout, tc.expectedOutput, res.stderr, res.exitCode);
+      const batchRes = await executeBatchTests(language, code, currentProblem.testCases);
 
-        tc.verdict = evaluation.verdict;
-        tc.actualOutput = res.stdout || res.stderr;
-        tc.error = res.stderr;
-        tc.executionTime = res.executionTime;
+      if (batchRes.isCompileError) {
+        // Erro de compilação geral: propaga para todos os casos
+        currentProblem.testCases.forEach((tc) => {
+          tc.verdict = 'CE';
+          tc.error = batchRes.compileError || 'Erro de Compilação';
+          tc.actualOutput = '';
+          tc.executionTime = batchRes.compileTime || 0;
+        });
+      } else if (batchRes.error) {
+        showToast(batchRes.error, false);
+        currentProblem.testCases.forEach((tc) => {
+          tc.verdict = 'RE';
+          tc.error = batchRes.error;
+          tc.actualOutput = '';
+        });
+      } else if (batchRes.results) {
+        const resultMap = new Map(batchRes.results.map((r) => [r.id, r]));
 
-        renderTestCases(currentProblem!.testCases);
-      });
-
-      await Promise.all(promises);
+        currentProblem.testCases.forEach((tc) => {
+          const res = resultMap.get(tc.id);
+          if (res) {
+            const evaluation = evaluateOutput(res.stdout, tc.expectedOutput, res.stderr, res.exitCode);
+            tc.verdict = evaluation.verdict;
+            tc.actualOutput = res.stdout || res.stderr;
+            tc.error = res.stderr;
+            tc.executionTime = res.executionTime;
+          }
+        });
+      }
     } catch (err: any) {
       console.error('Erro na bateria de testes:', err);
+      showToast(`Erro na execução: ${err?.message || err}`, false);
     } finally {
       runBtn.disabled = false;
       runBtn.textContent = 'Rodar Testes';
@@ -521,6 +540,56 @@ function loadCachedProblem() {
   });
 }
 
+async function initHostStatus() {
+  const hostEl = document.getElementById('host-status');
+  if (!hostEl) return;
+
+  hostEl.textContent = 'Verificando...';
+  hostEl.className = 'badge-host badge-host-checking';
+
+  const status = await checkNativeHost();
+  if (status.available) {
+    hostEl.textContent = '⚡ Local (PC)';
+    hostEl.className = 'badge-host badge-host-online';
+    hostEl.title = 'Host Nativo Conectado! Seus códigos compilam e rodam no seu computador com velocidade máxima.';
+  } else {
+    hostEl.textContent = '🔴 Host Offline';
+    hostEl.className = 'badge-host badge-host-offline';
+    hostEl.title = `Host Nativo offline (${status.error || 'não registrado'}). Clique para ver instruções de ativação.`;
+  }
+
+  hostEl.onclick = async () => {
+    hostEl.textContent = 'Verificando...';
+    hostEl.className = 'badge-host badge-host-checking';
+
+    const latestStatus = await checkNativeHost();
+    if (latestStatus.available) {
+      hostEl.textContent = '⚡ Local (PC)';
+      hostEl.className = 'badge-host badge-host-online';
+      hostEl.title = 'Host Nativo Conectado! Seus códigos compilam e rodam no seu computador com velocidade máxima.';
+      const langs = latestStatus.compilers
+        ? Object.entries(latestStatus.compilers)
+            .filter(([_, v]) => v)
+            .map(([k]) => k)
+            .join(', ')
+        : 'C++, C, Python, JS';
+      showToast(`⚡ Host Nativo Conectado! Compiladores: ${langs}`);
+    } else {
+      hostEl.textContent = '🔴 Host Offline';
+      hostEl.className = 'badge-host badge-host-offline';
+      hostEl.title = `Host Nativo offline (${latestStatus.error || 'não registrado'}). Clique para tentar novamente.`;
+      alert(
+        `Host Nativo ainda não respondeu.\n\n` +
+        `• Mensagem do Chrome: "${latestStatus.error || 'Host não encontrado'}"\n` +
+        `• ID desta extensão: "${chrome.runtime.id}"\n\n` +
+        `Para resolver:\n` +
+        `1. Recarregue a extensão em chrome://extensions/ (botão 🔄)\n` +
+        `2. Clique novamente aqui para conectar!`
+      );
+    }
+  };
+}
+
 // Inicialização geral
 document.addEventListener('DOMContentLoaded', () => {
   initEditor();
@@ -530,5 +599,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupMessageListener();
   loadCachedProblem();
   fetchProblemFromActiveTab();
-  console.log('[Beecrowd Companion] Side panel pronto com submissão direta!');
+  initHostStatus();
+  console.log('[Beecrowd Companion] Side panel pronto com submissão direta e Host Nativo!');
 });
+

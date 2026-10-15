@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "register-host": "node native-host/install.js",
+    "unregister-host": "node native-host/uninstall.js",
+    "test-host": "node native-host/runner-host.js --test"
   },
   "dependencies": {
     "monaco-editor": "^0.52.2"

@@ -46,16 +46,16 @@ A extensão foi construída sob o padrão **Manifest V3** utilizando **TypeScrip
                                                                  │ - Runner & Validador    │
                                                                  └────────────┬────────────┘
                                                                               │
-                                                                       Requisição HTTP
+                                                                 Chrome Native Messaging (stdio)
                                                                               │
                                                                               ▼
                                                                  ┌─────────────────────────┐
-                                                                 │       Wandbox API       │
-                                                                 │  - GCC 13.2 (C / C++20) │
-                                                                 │  - CPython 3.12         │
-                                                                 │  - OpenJDK 21           │
-                                                                 │  - Mono 6 (C#)          │
-                                                                 │  - Node.js 20           │
+                                                                 │   Native Runner Host    │
+                                                                 │     (runner-host.js)    │
+                                                                 │ - g++ / gcc local       │
+                                                                 │ - Python local          │
+                                                                 │ - Node.js local         │
+                                                                 │ ⚡ Compilação 1x (~60ms)│
                                                                  └─────────────────────────┘
 ```
 

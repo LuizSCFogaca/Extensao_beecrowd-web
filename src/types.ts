@@ -25,3 +25,34 @@ export interface ExecutionResponse {
   exitCode: number;
   executionTime: number;
 }
+
+export interface NativeHostStatus {
+  available: boolean;
+  compilers?: {
+    cpp: boolean;
+    c: boolean;
+    python: boolean;
+    javascript: boolean;
+    java: boolean;
+    csharp: boolean;
+  };
+  paths?: Record<string, string | null>;
+  error?: string;
+}
+
+export interface BatchTestCaseResult {
+  id: number;
+  stdout: string;
+  stderr: string;
+  exitCode: number;
+  executionTime: number;
+}
+
+export interface BatchExecutionResponse {
+  success: boolean;
+  isCompileError?: boolean;
+  compileError?: string;
+  compileTime?: number;
+  results?: BatchTestCaseResult[];
+  error?: string;
+}

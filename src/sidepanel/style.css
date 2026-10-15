@@ -69,6 +69,45 @@ html, body {
   white-space: nowrap;
 }
 
+.badge-host {
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.badge-host-online {
+  background-color: rgba(56, 138, 52, 0.2);
+  color: #4ec9b0;
+  border: 1px solid #388a34;
+}
+
+.badge-host-online:hover {
+  background-color: rgba(56, 138, 52, 0.4);
+}
+
+.badge-host-offline {
+  background-color: rgba(209, 52, 56, 0.2);
+  color: #f85149;
+  border: 1px solid #d13438;
+}
+
+.badge-host-offline:hover {
+  background-color: rgba(209, 52, 56, 0.4);
+}
+
+.badge-host-checking {
+  background-color: rgba(204, 167, 0, 0.2);
+  color: #cca700;
+  border: 1px solid #cca700;
+}
+
 .problem-meta h2 {
   font-size: 13px;
   font-weight: 500;
