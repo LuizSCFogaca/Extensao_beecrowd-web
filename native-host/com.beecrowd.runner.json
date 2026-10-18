@@ -1,10 +1,13 @@
 {
   "name": "com.beecrowd.runner",
   "description": "Beecrowd Companion Native Runner Host",
-  "path": "C:\\Users\\Home\\Desktop\\BeecrowdWeb\\native-host\\runner-host.bat",
+  "path": "/home/luiz/Extensao_beecrowd-web/native-host/runner-host.sh",
   "type": "stdio",
   "allowed_origins": [
     "chrome-extension://ghoilpfpdconipgmfcpfcjgmeabadkoe/",
     "chrome-extension://boenloljgjbdfcfljmlobcgeoolkncff/"
+  ],
+  "allowed_extensions": [
+    "beecrowd-companion@local"
   ]
 }

@@ -1,16 +1,18 @@
-# 🐝 Beecrowd Companion - Extensão para o Google Chrome
+# 🐝 Beecrowd Companion - Extensão para Google Chrome & Mozilla Firefox
 
 Uma extensão completa e moderna para resolver problemas no **Beecrowd** (antigo URI Online Judge) diretamente no navegador, eliminando a necessidade de alternar entre o VS Code e a plataforma.
+
+Agora **multiplataforma (Linux & Windows)** e **multinavegador (Firefox, Chrome, Brave, Chromium e Edge)**!
 
 ---
 
 ## 🚀 Principais Funcionalidades
 
 1. **Aba Lateral com Monaco Editor (Núcleo do VS Code)**:
-   - Interface com tema escuro idêntica ao VS Code.
-   - Suporte completo e realce de sintaxe para: **C, C++ 17, Python 3, Java 21, C# e JavaScript (Node.js)**.
+   - Interface idêntica ao VS Code com tema escuro.
+   - Suporte completo e realce de sintaxe para: **C, C++ 17/20, Python 3, Java 21, C# e JavaScript (Node.js)**.
    - Modelos de código inicial (*templates*) com leitura de entrada padrão já configurada.
-   - Salvamento automático contínuo (`chrome.storage.local`) para não perder nenhum código caso recarregue ou feche a aba.
+   - Salvamento automático contínuo (`chrome.storage.local` / `browser.storage.local`) para não perder nenhum código.
 
 2. **Leitura e Extração Automática de Problemas**:
    - Detecta automaticamente o ID da questão (ex: `#1001`), o título e o limite de tempo.
@@ -19,10 +21,10 @@ Uma extensão completa e moderna para resolver problemas no **Beecrowd** (antigo
    - Botão para adicionar casos de teste manuais personalizados.
    - Botão de cópia rápida (📋) para a entrada de cada teste.
 
-3. **Execução Local Nativa com Desempenho Idêntico ao VS Code (⚡ Instantâneo)**:
-   - Compila e roda os códigos **diretamente no seu processador** via **Chrome Native Messaging**.
-   - Zero dependência de APIs externas lentas (Wandbox/Piston removidos).
-   - Compilação inteligente única para C/C++: o binário é gerado 1x e reutilizado para rodar todos os casos de teste em milissegundos (~20ms a 60ms por teste).
+3. **Execução Local Nativa com Desempenho Instantâneo (⚡ 4ms a 60ms)**:
+   - Compila e roda os códigos **diretamente no seu processador** via **WebExtensions / Chrome Native Messaging**.
+   - Zero dependência de servidores remotos lentos.
+   - Compilação inteligente única para C/C++: o binário é gerado 1x e reutilizado para rodar todos os casos de teste em milissegundos.
    - Execução em lote com feedback visual em tempo real para cada caso de teste.
    - **Vereditos inteligentes**:
      - 🟩 **Passou (`AC`)**: saída bate perfeitamente com a esperada (com indicação do tempo de resposta em ms).
@@ -40,20 +42,99 @@ Uma extensão completa e moderna para resolver problemas no **Beecrowd** (antigo
 
 ---
 
-## 🛠️ Como Instalar no Google Chrome
+## 🧰 Pré-requisitos (Compiladores Locais)
 
-1. Abra o Google Chrome e acesse:
+Para executar os códigos no seu computador, certifique-se de ter os compiladores/interpretadores instalados:
+
+### No Arch Linux
+```bash
+sudo pacman -S gcc python nodejs
+# Opcional (para Java e C#):
+sudo pacman -S jdk-openjdk dotnet-sdk
+```
+
+### No Ubuntu / Debian
+```bash
+sudo apt update && sudo apt install build-essential python3 nodejs
+# Opcional:
+sudo apt install default-jdk dotnet-sdk-8.0
+```
+
+### No Windows
+- **C/C++**: [MSYS2](https://www.msys2.org/) (com pacote `mingw-w64-ucrt-x86_64-gcc`) adicionado ao PATH.
+- **Python**: [python.org](https://www.python.org/) (marcar "Add Python to PATH" durante a instalação).
+- **Node.js**: [nodejs.org](https://nodejs.org/).
+
+---
+
+## 🛠️ Como Instalar no Navegador
+
+### 🦊 Opção A: Mozilla Firefox (Linux & Windows)
+
+1. Abra o Firefox e acesse na barra de endereços:
+   ```
+   about:debugging#/runtime/this-firefox
+   ```
+2. Clique no botão **"Carregar extensão temporária..."** (*Load Temporary Add-on...*).
+3. Selecione o arquivo de manifesto gerado na pasta do projeto:
+   ```
+   dist/manifest.json
+   ```
+4. A extensão será carregada! A barra lateral abrirá ao clicar no ícone do Beecrowd Companion na barra de ferramentas ou através do menu de barras laterais do Firefox.
+5. **Registrar o Runner Nativo**:
+   - **No Linux (Arch)**: execute no terminal dentro da pasta do projeto:
+     ```bash
+     ./registrar-host.sh
+     # ou: npm run register-host
+     ```
+   - **No Windows**: dê dois cliques no arquivo `registrar-host.bat` (ou execute `npm run register-host`).
+
+---
+
+### 🌐 Opção B: Google Chrome / Brave / Edge / Chromium (Linux & Windows)
+
+1. Abra o Chrome e acesse:
    ```
    chrome://extensions/
    ```
 2. No canto superior direito, ative a chave **"Modo do desenvolvedor"**.
 3. Clique no botão **"Carregar sem compactação"** (*Load unpacked*).
-4. Selecione a pasta do projeto:
-   ```
-   C:\Users\Home\Desktop\BeecrowdWeb\dist
-   ```
-5. Fixe o ícone da extensão na barra de ferramentas do Chrome.
-6. Na pasta do projeto, dê dois cliques no arquivo **`registrar-host.bat`** (ou execute `npm run register-host`) para autorizar a extensão a executar seus compiladores locais. Pronto!
+4. Selecione a pasta **`dist/`** do projeto.
+5. Fixe o ícone da extensão na barra de ferramentas.
+6. **Registrar o Runner Nativo**:
+   - **No Linux (Arch)**: execute no terminal `./registrar-host.sh` (ou `npm run register-host`).
+   - **No Windows**: dê dois cliques no arquivo `registrar-host.bat` (ou execute `npm run register-host`).
+
+---
+
+## 🔍 Diagnóstico e Teste do Runner Nativo
+
+Você pode verificar a qualquer momento se seus compiladores estão sendo detectados e testar a velocidade de compilação/execução local rodando:
+
+```bash
+npm run test-host
+```
+
+Exemplo de saída no Arch Linux:
+```text
+=== TESTE DE DIAGNÓSTICO DO RUNNER NATIVO ===
+Compiladores detectados:
+ - C++ (g++): /usr/bin/g++
+ - C (gcc): /usr/bin/gcc
+ - Python: /usr/bin/python3
+ - Node.js: /usr/bin/node
+ - Java (javac): NÃO ENCONTRADO
+
+Testando compilação e execução C++...
+Resultado C++: {
+  "success": true,
+  "isCompileError": false,
+  "results": [
+    { "id": 1, "stdout": "X = 19\n", "exitCode": 0, "executionTime": 4 },
+    { "id": 2, "stdout": "X = -6\n", "exitCode": 0, "executionTime": 4 }
+  ]
+}
+```
 
 ---
 
@@ -69,7 +150,15 @@ Caso queira fazer alterações no código-fonte (`src/`):
   ```bash
   npm run build
   ```
-* Após rodar `npm run build`, basta clicar no ícone de recarregar (🔄) na página de extensões do Chrome (`chrome://extensions/`).
+* **Registrar Host Nativo**:
+  ```bash
+  npm run register-host
+  ```
+* **Desinstalar Host Nativo**:
+  ```bash
+  npm run unregister-host
+  ```
+* Após rodar `npm run build`, recarregue a extensão na página de extensões do seu navegador (🔄).
 
 ---
 
@@ -77,23 +166,32 @@ Caso queira fazer alterações no código-fonte (`src/`):
 
 ```
 BeecrowdWeb/
-├── dist/                      # Extensão compilada (pronta para carregar no Chrome)
+├── dist/                          # Extensão compilada (pronta para Chrome e Firefox)
 ├── public/
-│   ├── manifest.json          # Manifesto V3 da extensão
-│   └── content-loader.js      # Carregador dinâmico do Content Script
+│   ├── manifest.json              # Manifesto V3 híbrido (Chrome side_panel + Firefox sidebar_action)
+│   └── content-loader.js          # Carregador dinâmico do Content Script
+├── native-host/
+│   ├── runner-host.js             # Motor de execução stdio multiplataforma (C++, C, Python, JS, Java)
+│   ├── runner-host.sh             # Wrapper executável para Linux / macOS
+│   ├── runner-host.bat            # Wrapper executável para Windows
+│   ├── install.js                 # Instalador automático de registros no Linux e Windows
+│   ├── uninstall.js               # Desinstalador automático de registros
+│   └── com.beecrowd.runner.json   # Modelo do manifesto nativo
+├── registrar-host.sh              # Script de registro rápido para Linux
+├── registrar-host.bat             # Script de registro rápido para Windows
 ├── src/
-│   ├── types.ts               # Tipos TypeScript compartilhados
+│   ├── types.ts                   # Tipos TypeScript compartilhados
 │   ├── background/
-│   │   └── index.ts           # Service Worker do Chrome (Side Panel behavior)
+│   │   └── index.ts               # Background Worker híbrido (Chrome sidePanel & Firefox sidebarAction)
 │   ├── content/
-│   │   └── index.ts           # Extrator de enunciados e tabelas do Beecrowd
+│   │   └── index.ts               # Extrator de enunciados e tabelas do Beecrowd (suporte a iframes)
 │   └── sidepanel/
-│       ├── main.ts            # Lógica principal, Monaco Editor e interface
-│       ├── runner.ts          # Motor de execução remota e validador de diff
-│       ├── injector.ts        # Injetor de código no formulário do Beecrowd
-│       └── style.css          # Estilização completa estilo VS Code
-├── sidepanel.html             # HTML da interface do Side Panel
-├── package.json               # Dependências do projeto
-├── tsconfig.json              # Configurações TypeScript
-└── vite.config.ts             # Configuração de build do Vite
+│       ├── main.ts                # Lógica principal, Monaco Editor e interface
+│       ├── runner.ts              # Cliente WebExtensions Native Messaging e validador de diff
+│       ├── injector.ts            # Injetor de código no formulário oficial do Beecrowd
+│       └── style.css              # Estilização completa estilo VS Code
+├── sidepanel.html                 # Interface HTML do painel lateral
+├── package.json                   # Dependências e scripts npm
+├── tsconfig.json                  # Configurações do compilador TypeScript
+└── vite.config.ts                 # Configuração de build do Vite
 ```

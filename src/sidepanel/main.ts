@@ -580,11 +580,12 @@ async function initHostStatus() {
       hostEl.title = `Host Nativo offline (${latestStatus.error || 'não registrado'}). Clique para tentar novamente.`;
       alert(
         `Host Nativo ainda não respondeu.\n\n` +
-        `• Mensagem do Chrome: "${latestStatus.error || 'Host não encontrado'}"\n` +
-        `• ID desta extensão: "${chrome.runtime.id}"\n\n` +
+        `• Mensagem do navegador: "${latestStatus.error || 'Host não encontrado'}"\n` +
+        `• ID desta extensão: "${chrome?.runtime?.id || 'indefinido'}"\n\n` +
         `Para resolver:\n` +
-        `1. Recarregue a extensão em chrome://extensions/ (botão 🔄)\n` +
-        `2. Clique novamente aqui para conectar!`
+        `1. Execute ./registrar-host.sh (Linux) ou registrar-host.bat (Windows)\n` +
+        `2. Recarregue a extensão no navegador\n` +
+        `3. Clique novamente aqui para conectar!`
       );
     }
   };

@@ -3,23 +3,39 @@ import { ExecutionResponse, Verdict, NativeHostStatus, BatchExecutionResponse, T
 const NATIVE_HOST_NAME = 'com.beecrowd.runner';
 
 /**
- * Envia uma mensagem nativa para o host local via Chrome Native Messaging
+ * Envia uma mensagem nativa para o host local via Chrome ou Firefox Native Messaging
  */
 function sendNativeMessage<T = any>(message: Record<string, any>): Promise<T> {
   return new Promise((resolve, reject) => {
-    if (!chrome?.runtime?.sendNativeMessage) {
-      reject(new Error('A API chrome.runtime.sendNativeMessage não está disponível neste contexto.'));
+    const browserAPI = (globalThis as any).browser;
+
+    // Firefox WebExtensions API: sendNativeMessage retorna Promise nativamente
+    if (browserAPI?.runtime?.sendNativeMessage) {
+      try {
+        const res = browserAPI.runtime.sendNativeMessage(NATIVE_HOST_NAME, message);
+        if (res && typeof res.then === 'function') {
+          res.then((response: T) => resolve(response)).catch((err: any) => reject(err));
+          return;
+        }
+      } catch {
+        // Fallback para callback se necessário
+      }
+    }
+
+    // Chrome / Chromium API: sendNativeMessage baseado em callback
+    if (typeof chrome !== 'undefined' && chrome?.runtime?.sendNativeMessage) {
+      chrome.runtime.sendNativeMessage(NATIVE_HOST_NAME, message, (response) => {
+        const err = chrome.runtime.lastError;
+        if (err) {
+          reject(new Error(err.message || 'Erro ao conectar ao Host Nativo.'));
+          return;
+        }
+        resolve(response as T);
+      });
       return;
     }
 
-    chrome.runtime.sendNativeMessage(NATIVE_HOST_NAME, message, (response) => {
-      const err = chrome.runtime.lastError;
-      if (err) {
-        reject(new Error(err.message || 'Erro ao conectar ao Host Nativo.'));
-        return;
-      }
-      resolve(response as T);
-    });
+    reject(new Error('A API sendNativeMessage não está disponível neste navegador.'));
   });
 }
 

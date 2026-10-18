@@ -16,10 +16,12 @@ function debugLog(...args) {
  */
 function findExecutable(name, preferredPaths = []) {
   for (const p of preferredPaths) {
-    if (fs.existsSync(p)) return p;
+    if (p && fs.existsSync(p)) return p;
   }
   try {
-    const res = execSync(`where.exe ${name}`, {
+    const isWin = process.platform === 'win32';
+    const checkCmd = isWin ? `where.exe ${name}` : `which ${name}`;
+    const res = execSync(checkCmd, {
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'ignore'],
     });
@@ -29,9 +31,11 @@ function findExecutable(name, preferredPaths = []) {
       .map(l => l.trim())
       .filter(Boolean);
 
-    // Ignora stubs do WindowsApps (que abrem a loja da Microsoft em vez de rodar)
-    const valid = lines.filter(l => !l.toLowerCase().includes('windowsapps'));
-    if (valid.length > 0) return valid[0];
+    if (isWin) {
+      // Ignora stubs do WindowsApps (que abrem a loja da Microsoft em vez de rodar)
+      const valid = lines.filter(l => !l.toLowerCase().includes('windowsapps'));
+      if (valid.length > 0) return valid[0];
+    }
     if (lines.length > 0) return lines[0];
   } catch {
     // Não encontrado
@@ -43,29 +47,28 @@ function findExecutable(name, preferredPaths = []) {
  * Dicionário com caminhos dos compiladores/interpretadores detectados
  */
 function detectCompilers() {
-  const msysUcrt = 'C:\\msys64\\ucrt64\\bin';
-  const msysMingw = 'C:\\msys64\\mingw64\\bin';
+  const isWin = process.platform === 'win32';
+  const msysUcrt = isWin ? 'C:\\msys64\\ucrt64\\bin' : '';
+  const msysMingw = isWin ? 'C:\\msys64\\mingw64\\bin' : '';
+
+  const preferredPython = isWin
+    ? [
+        path.join(msysUcrt, 'python.exe'),
+        path.join(msysMingw, 'python.exe'),
+        'C:\\Python312\\python.exe',
+        'C:\\Python311\\python.exe',
+        'C:\\Python310\\python.exe',
+      ]
+    : ['/usr/bin/python3', '/usr/bin/python'];
 
   return {
-    cpp: findExecutable('g++', [
-      path.join(msysUcrt, 'g++.exe'),
-      path.join(msysMingw, 'g++.exe'),
-    ]),
-    c: findExecutable('gcc', [
-      path.join(msysUcrt, 'gcc.exe'),
-      path.join(msysMingw, 'gcc.exe'),
-    ]),
-    python: findExecutable('python', [
-      path.join(msysUcrt, 'python.exe'),
-      path.join(msysMingw, 'python.exe'),
-      'C:\\Python312\\python.exe',
-      'C:\\Python311\\python.exe',
-      'C:\\Python310\\python.exe',
-    ]),
+    cpp: findExecutable('g++', isWin ? [path.join(msysUcrt, 'g++.exe'), path.join(msysMingw, 'g++.exe')] : ['/usr/bin/g++']),
+    c: findExecutable('gcc', isWin ? [path.join(msysUcrt, 'gcc.exe'), path.join(msysMingw, 'gcc.exe')] : ['/usr/bin/gcc']),
+    python: findExecutable('python3', preferredPython) || findExecutable('python', preferredPython),
     javascript: process.execPath || findExecutable('node'),
     java: {
-      javac: findExecutable('javac'),
-      java: findExecutable('java'),
+      javac: findExecutable('javac', isWin ? [] : ['/usr/bin/javac']),
+      java: findExecutable('java', isWin ? [] : ['/usr/bin/java']),
     },
     csharp: findExecutable('dotnet') || findExecutable('csc'),
   };
@@ -224,7 +227,7 @@ function handleExecution(msg) {
   const ext = extMap[language] || '.txt';
 
   const srcFile = path.join(tempDir, language === 'java' ? 'Main.java' : `solution${ext}`);
-  const exeFile = path.join(tempDir, 'solution.exe');
+  const exeFile = path.join(tempDir, process.platform === 'win32' ? 'solution.exe' : 'solution');
 
   try {
     fs.writeFileSync(srcFile, code || '', 'utf8');

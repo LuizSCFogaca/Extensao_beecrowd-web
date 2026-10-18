@@ -4,6 +4,12 @@
   "version": "1.0.0",
   "description": "Editor integrado estilo VS Code com execução de testes para o Beecrowd",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnOVWfhm9Hjwj5IHzDbj2/tX4PlQCJHfHvcWnV+p2/GD7/m9HjYQJWP4PkQGhCQv+KZElfo2yOPJNFPDm/DpkkTtebEr9y6i+D1Ojy1mNV8ZNmGm/+FXi6ra403YisBT6pD7R3O3GVdYCWThk5XohMBwmHDLvdMf1P/say7aV+Bx7Ue8pCrwSlfoqdE8xEtLq0nkIO6kmVje24kJhbrES7asff/OeFDQrdd9Ke7uYjAFL+zUMy21Mz+XYT7xiHh2O+JhecHfT+BG52eUpeAvFWFvFeFJh7aNyJNHxdXZjxyB1XpxJjTBgs3VQQdVWrwn5iCEuHIpnT7CbYj0T5IFu6QIDAQAB",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "beecrowd-companion@local",
+      "strict_min_version": "109.0"
+    }
+  },
   "permissions": [
     "sidePanel",
     "activeTab",
@@ -19,10 +25,15 @@
   ],
   "background": {
     "service_worker": "background.js",
+    "scripts": ["background.js"],
     "type": "module"
   },
   "side_panel": {
     "default_path": "sidepanel.html"
+  },
+  "sidebar_action": {
+    "default_panel": "sidepanel.html",
+    "default_title": "Beecrowd Companion"
   },
   "action": {
     "default_title": "Abrir Beecrowd Companion"
